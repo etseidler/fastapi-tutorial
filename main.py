@@ -91,7 +91,7 @@ async def read_user_item(
     return item
 
 
-@app.get("/items/{item_id}")
+# @app.get("/items/{item_id}")
 async def read_user_item_required_query_param(item_id: str, needy: str):
     item = {"item_id": item_id, "needy": needy}
     return item
@@ -125,6 +125,24 @@ async def read_items_param_validation(
     )
 ):
     results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
+
+
+from fastapi import FastAPI, Path, Query
+
+app = FastAPI()
+
+
+@app.get("/items/{item_id}")
+async def read_items_path_param_validation(
+    *,  # https://fastapi.tiangolo.com/tutorial/path-params-numeric-validations/#order-the-parameters-as-you-need-tricks
+    item_id: int = Path(..., title="The ID of the item to get", ge=0, le=1000),
+    q: str,
+    size: float = Query(..., gt=0, lt=10.5)
+):
+    results = {"item_id": item_id}
     if q:
         results.update({"q": q})
     return results
