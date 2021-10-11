@@ -117,6 +117,7 @@ async def create_item(item: Item):
 async def read_items_param_validation(
     q: Optional[str] = Query(
         None,
+        alias="item-query",
         title="Query string",
         description="Query string for the items to search in the database that have a good match",
         min_length=3,
