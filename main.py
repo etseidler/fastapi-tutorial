@@ -1,5 +1,5 @@
 from enum import Enum
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from pydantic import BaseModel
 from typing import Optional
 
@@ -51,7 +51,7 @@ async def read_file(file_path: str):
 fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
 
 
-@app.get("/items/")
+# @app.get("/items/")
 async def read_item_query_param(skip: int = 0, limit: int = 10):
     return fake_items_db[skip : skip + limit]
 
@@ -111,3 +111,13 @@ async def create_item(item: Item):
         price_with_tax = item.price + item.tax
         item_dict.update({"price_with_tax": price_with_tax})
     return item_dict
+
+
+@app.get("/items/")
+async def read_items_param_validation(
+    q: Optional[str] = Query(None, min_length=3, max_length=50, regex="^regexactvalue$")
+):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
